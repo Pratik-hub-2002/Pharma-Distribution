@@ -295,6 +295,58 @@ public class PaymentDAO {
 	}
 
 	// =========================================================
+	// ADD PAYMENT - TRANSACTION VERSION
+	// =========================================================
+
+	public int addPayment(Connection connection, Payment payment) throws Exception {
+
+		String sql = """
+				INSERT INTO payments (
+				    invoice_id,
+				    payment_date,
+				    amount,
+				    payment_method,
+				    transaction_reference,
+				    payment_status,
+				    recorded_by
+				)
+				VALUES (?, ?, ?, ?, ?, ?, ?)
+				""";
+
+		try (PreparedStatement statement = connection.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
+
+			statement.setInt(1, payment.getInvoiceId());
+
+			statement.setDate(2, payment.getPaymentDate());
+
+			statement.setBigDecimal(3, payment.getAmount());
+
+			statement.setString(4, payment.getPaymentMethod());
+
+			statement.setString(5, payment.getTransactionReference());
+
+			statement.setString(6, payment.getPaymentStatus());
+
+			statement.setInt(7, payment.getRecordedBy());
+
+			int rowsAffected = statement.executeUpdate();
+
+			if (rowsAffected == 0) {
+				throw new Exception("Payment creation failed.");
+			}
+
+			try (ResultSet resultSet = statement.getGeneratedKeys()) {
+
+				if (resultSet.next()) {
+					return resultSet.getInt(1);
+				}
+			}
+		}
+
+		throw new Exception("Payment ID could not be generated.");
+	}
+
+	// =========================================================
 	// GET TOTAL SUCCESSFUL PAYMENTS
 	// =========================================================
 

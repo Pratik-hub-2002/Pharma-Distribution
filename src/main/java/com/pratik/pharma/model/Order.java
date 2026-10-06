@@ -25,6 +25,8 @@ public class Order {
 	private String createdByName;
 	private int itemCount;
 
+	private String orderSource;
+
 	public Order() {
 	}
 
@@ -146,5 +148,13 @@ public class Order {
 
 	public void setItemCount(int itemCount) {
 		this.itemCount = itemCount;
+	}
+
+	public String getOrderSource() {
+		return orderSource;
+	}
+
+	public void setOrderSource(String orderSource) {
+		this.orderSource = orderSource;
 	}
 }
