@@ -77,6 +77,7 @@ body {
 
 <body>
 
+
 	<!-- =========================================================
      NAVBAR
 ========================================================= -->
@@ -110,6 +111,11 @@ body {
 
 	<div class="container">
 
+
+		<!-- =====================================================
+	     DASHBOARD TITLE
+	====================================================== -->
+
 		<div class="dashboard-title">
 
 			<h1>Pharma Distribution Dashboard</h1>
@@ -121,20 +127,26 @@ body {
 
 
 		<!-- =====================================================
-         SUPER ADMIN
-    ====================================================== -->
+	     SUPER ADMIN
+	====================================================== -->
 
 		<%
 		if ("SUPER_ADMIN".equals(role)) {
 		%>
 
+
+		<!-- =====================================================
+	     MASTER MANAGEMENT
+	====================================================== -->
+
 		<h3 class="section-title">Master Management</h3>
 
 		<div class="row g-4">
 
+
 			<!-- =================================================
-             USER MANAGEMENT
-        ================================================== -->
+		     USER MANAGEMENT
+		================================================== -->
 
 			<div class="col-md-6 col-lg-4">
 
@@ -160,8 +172,8 @@ body {
 
 
 			<!-- =================================================
-             CLIENTS
-        ================================================== -->
+		     CLIENTS
+		================================================== -->
 
 			<div class="col-md-6 col-lg-4">
 
@@ -187,8 +199,8 @@ body {
 
 
 			<!-- =================================================
-             PRODUCTS
-        ================================================== -->
+		     PRODUCTS
+		================================================== -->
 
 			<div class="col-md-6 col-lg-4">
 
@@ -214,8 +226,8 @@ body {
 
 
 			<!-- =================================================
-             BATCHES
-        ================================================== -->
+		     BATCHES
+		================================================== -->
 
 			<div class="col-md-6 col-lg-4">
 
@@ -241,8 +253,8 @@ body {
 
 
 			<!-- =================================================
-             INVENTORY
-        ================================================== -->
+		     INVENTORY
+		================================================== -->
 
 			<div class="col-md-6 col-lg-4">
 
@@ -268,8 +280,8 @@ body {
 
 
 			<!-- =================================================
-             STOCK TRANSACTIONS
-        ================================================== -->
+		     STOCK TRANSACTIONS
+		================================================== -->
 
 			<div class="col-md-6 col-lg-4">
 
@@ -295,8 +307,8 @@ body {
 
 
 			<!-- =================================================
-             SCHEMES
-        ================================================== -->
+		     SCHEMES
+		================================================== -->
 
 			<div class="col-md-6 col-lg-4">
 
@@ -320,19 +332,22 @@ body {
 
 			</div>
 
+
 		</div>
 
 
 		<!-- =====================================================
-         SALES & ORDERS
-    ====================================================== -->
+	     SALES & ORDERS
+	====================================================== -->
 
 		<h3 class="section-title">Sales &amp; Orders</h3>
 
 		<div class="row g-4">
 
 
-			<!-- ORDERS -->
+			<!-- =================================================
+		     CUSTOMER ORDERS
+		================================================== -->
 
 			<div class="col-md-6 col-lg-4">
 
@@ -356,7 +371,9 @@ body {
 			</div>
 
 
-			<!-- DOCUMENTS -->
+			<!-- =================================================
+		     CLIENT DOCUMENTS
+		================================================== -->
 
 			<div class="col-md-6 col-lg-4">
 
@@ -373,6 +390,550 @@ body {
 
 						<a href="clients?action=list" class="btn btn-success"> Client
 							Documents </a>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+			<!-- =================================================
+		     SHIPMENTS
+		================================================== -->
+
+			<div class="col-md-6 col-lg-4">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">🚚</div>
+
+						<h5>Shipments</h5>
+
+						<p class="text-muted">Manage dispatch and delivery.</p>
+
+						<a href="shipments?action=list" class="btn btn-success">
+							Shipments </a>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+			<!-- =================================================
+		     INVOICES
+		================================================== -->
+
+			<div class="col-md-6 col-lg-4">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">🧾</div>
+
+						<h5>Invoices</h5>
+
+						<p class="text-muted">Generate and view customer tax invoices.
+						</p>
+
+						<a href="invoices?action=list" class="btn btn-success">
+							Invoices </a>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+			<!-- =================================================
+		     PAYMENTS
+		================================================== -->
+
+			<div class="col-md-6 col-lg-4">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">💰</div>
+
+						<h5>Payments</h5>
+
+						<p class="text-muted">Record payments and track outstanding
+							invoice amounts.</p>
+
+						<a href="payments?action=list" class="btn btn-success">
+							Payments </a>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+			<!-- =================================================
+		     OFFLINE SALE
+		================================================== -->
+
+			<div class="col-md-6 col-lg-4">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">💵</div>
+
+						<h5>Offline Sale</h5>
+
+						<p class="text-muted">Create counter sales with automatic FEFO
+							stock allocation, invoice and payment.</p>
+
+						<a href="offline-sale" class="btn btn-warning"> Create Offline
+							Sale </a>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+		</div>
+
+
+		<!-- =====================================================
+	     QUICK ACTIONS
+	====================================================== -->
+
+		<h3 class="section-title">Quick Actions</h3>
+
+		<div class="mb-5">
+
+			<a href="orders?action=add" class="btn btn-success me-2"> 🛒
+				Create Order </a> <a href="offline-sale" class="btn btn-warning me-2">
+				💵 Offline Sale </a> <a href="payments?action=list"
+				class="btn btn-info me-2"> 💰 Payments </a> <a
+				href="shipments?action=list" class="btn btn-info me-2"> 🚚
+				Shipments </a> <a href="clients?action=list" class="btn btn-secondary">
+				👥 Clients </a>
+
+		</div>
+
+
+		<%
+		}
+		%>
+
+
+		<!-- =====================================================
+	     INVENTORY CLERK
+	====================================================== -->
+
+		<%
+		if ("INVENTORY_CLERK".equals(role)) {
+		%>
+
+		<h3 class="section-title">Inventory Management</h3>
+
+		<div class="row g-4">
+
+
+			<!-- PRODUCTS -->
+
+			<div class="col-md-6 col-lg-3">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">💊</div>
+
+						<h5>Products</h5>
+
+						<p class="text-muted">View medicine information.</p>
+
+						<a href="products?action=list" class="btn btn-primary">
+							Products </a>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+			<!-- BATCHES -->
+
+			<div class="col-md-6 col-lg-3">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">📦</div>
+
+						<h5>Batches</h5>
+
+						<p class="text-muted">Manage batches and expiry.</p>
+
+						<a href="batches?action=list" class="btn btn-primary"> Batches
+						</a>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+			<!-- INVENTORY -->
+
+			<div class="col-md-6 col-lg-3">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">🏬</div>
+
+						<h5>Inventory</h5>
+
+						<p class="text-muted">Monitor available stock.</p>
+
+						<a href="inventory?action=list" class="btn btn-primary">
+							Inventory </a>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+			<!-- STOCK TRANSACTIONS -->
+
+			<div class="col-md-6 col-lg-3">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">🔄</div>
+
+						<h5>Stock Transactions</h5>
+
+						<p class="text-muted">Track stock movements.</p>
+
+						<a href="stock-transactions?action=list" class="btn btn-primary">
+							Transactions </a>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+		</div>
+
+
+		<%
+		}
+		%>
+
+
+		<!-- =====================================================
+	     SALES REPRESENTATIVE
+	====================================================== -->
+
+		<%
+		if ("SALES_REP".equals(role)) {
+		%>
+
+		<h3 class="section-title">Sales Management</h3>
+
+		<div class="row g-4">
+
+
+			<!-- CLIENTS -->
+
+			<div class="col-md-6 col-lg-4">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">👥</div>
+
+						<h5>Clients</h5>
+
+						<p class="text-muted">Manage registered clients.</p>
+
+						<a href="clients?action=list" class="btn btn-primary"> Clients
+						</a>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+			<!-- PRODUCTS -->
+
+			<div class="col-md-6 col-lg-4">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">💊</div>
+
+						<h5>Products</h5>
+
+						<p class="text-muted">View medicines and prices.</p>
+
+						<a href="products?action=list" class="btn btn-primary">
+							Products </a>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+			<!-- CLIENT DOCUMENTS -->
+
+			<div class="col-md-6 col-lg-4">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">📄</div>
+
+						<h5>Client Documents</h5>
+
+						<p class="text-muted">Verify client documents.</p>
+
+						<a href="clients?action=list" class="btn btn-primary">
+							Documents </a>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+			<!-- SCHEMES -->
+
+			<div class="col-md-6 col-lg-4">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">🏷️</div>
+
+						<h5>Schemes</h5>
+
+						<p class="text-muted">Manage promotional schemes.</p>
+
+						<a href="schemes?action=list" class="btn btn-primary"> Schemes
+						</a>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+			<!-- ORDERS -->
+
+			<div class="col-md-6 col-lg-4">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">🛒</div>
+
+						<h5>Orders</h5>
+
+						<p class="text-muted">Create and manage customer orders.</p>
+
+						<a href="orders?action=list" class="btn btn-success"> Orders </a>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+			<!-- OFFLINE SALE -->
+
+			<div class="col-md-6 col-lg-4">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">💵</div>
+
+						<h5>Offline Sale</h5>
+
+						<p class="text-muted">Create counter sales with automatic FEFO
+							stock allocation.</p>
+
+						<a href="offline-sale" class="btn btn-warning"> Offline Sale </a>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+		</div>
+
+
+		<%
+		}
+		%>
+
+
+		<!-- =====================================================
+	     ACCOUNTANT
+	====================================================== -->
+
+		<%
+		if ("ACCOUNTANT".equals(role)) {
+		%>
+
+		<h3 class="section-title">Finance Management</h3>
+
+		<div class="row g-4">
+
+
+			<!-- CLIENTS -->
+
+			<div class="col-md-6 col-lg-4">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">👥</div>
+
+						<h5>Clients</h5>
+
+						<p class="text-muted">View registered clients.</p>
+
+						<a href="clients?action=list" class="btn btn-primary"> Clients
+						</a>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+			<!-- INVOICES -->
+
+			<div class="col-md-6 col-lg-4">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">🧾</div>
+
+						<h5>Invoices</h5>
+
+						<p class="text-muted">Manage customer invoices.</p>
+
+						<a href="invoices?action=list" class="btn btn-success">
+							Invoices </a>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+			<!-- PAYMENTS -->
+
+			<div class="col-md-6 col-lg-4">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">💰</div>
+
+						<h5>Payments</h5>
+
+						<p class="text-muted">Record payments and balances.</p>
+
+						<a href="payments?action=list" class="btn btn-success">
+							Payments </a>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
+		</div>
+
+
+		<%
+		}
+		%>
+
+
+		<!-- =====================================================
+	     DISPATCH MANAGER
+	====================================================== -->
+
+		<%
+		if ("DISPATCH_MANAGER".equals(role)) {
+		%>
+
+		<h3 class="section-title">Dispatch Management</h3>
+
+		<div class="row g-4">
+
+
+			<!-- ORDERS -->
+
+			<div class="col-md-6 col-lg-4">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">🛒</div>
+
+						<h5>Orders</h5>
+
+						<p class="text-muted">View orders ready for dispatch.</p>
+
+						<a href="orders?action=list" class="btn btn-primary"> Orders </a>
 
 					</div>
 
@@ -405,74 +966,8 @@ body {
 			</div>
 
 
-			<!-- INVOICES -->
-
-			<div class="col-md-6 col-lg-4">
-
-				<div class="card module-card shadow-sm">
-
-					<div class="card-body">
-
-						<div class="module-icon">🧾</div>
-
-						<h5>Invoices</h5>
-
-						<p class="text-muted">Generate and view customer tax invoices.
-						</p>
-
-						<a href="invoices?action=list" class="btn btn-success">
-							Invoices </a>
-
-					</div>
-
-				</div>
-
-			</div>
-
-
-			<!-- PAYMENTS -->
-
-			<div class="col-md-6 col-lg-4">
-
-				<div class="card module-card shadow-sm">
-
-					<div class="card-body">
-
-						<div class="module-icon">💰</div>
-
-						<h5>Payments</h5>
-
-						<p class="text-muted">Record payments and track outstanding
-							invoice amounts.</p>
-
-						<a href="payments?action=list" class="btn btn-success">
-							Payments </a>
-
-					</div>
-
-				</div>
-
-			</div>
-
 		</div>
 
-
-		<!-- =====================================================
-         QUICK ACTIONS
-    ====================================================== -->
-
-		<h3 class="section-title">Quick Actions</h3>
-
-		<div class="mb-5">
-
-			<a href="orders?action=add" class="btn btn-success me-2"> 🛒
-				Create Order </a> <a href="payments?action=add&invoiceId=1"
-				class="btn btn-warning me-2"> 💰 Record Payment </a> <a
-				href="shipments?action=list" class="btn btn-info me-2"> 🚚
-				Shipments </a> <a href="clients?action=list" class="btn btn-secondary">
-				👥 Clients </a>
-
-		</div>
 
 		<%
 		}
@@ -480,386 +975,8 @@ body {
 
 
 		<!-- =====================================================
-         INVENTORY CLERK
-    ====================================================== -->
-
-		<%
-		if ("INVENTORY_CLERK".equals(role)) {
-		%>
-
-		<h3 class="section-title">Inventory Management</h3>
-
-		<div class="row g-4">
-
-			<div class="col-md-6 col-lg-3">
-
-				<div class="card module-card shadow-sm">
-
-					<div class="card-body">
-
-						<div class="module-icon">💊</div>
-
-						<h5>Products</h5>
-
-						<p class="text-muted">View medicine information.</p>
-
-						<a href="products?action=list" class="btn btn-primary">
-							Products </a>
-
-					</div>
-
-				</div>
-
-			</div>
-
-
-			<div class="col-md-6 col-lg-3">
-
-				<div class="card module-card shadow-sm">
-
-					<div class="card-body">
-
-						<div class="module-icon">📦</div>
-
-						<h5>Batches</h5>
-
-						<p class="text-muted">Manage batches and expiry.</p>
-
-						<a href="batches?action=list" class="btn btn-primary"> Batches
-						</a>
-
-					</div>
-
-				</div>
-
-			</div>
-
-
-			<div class="col-md-6 col-lg-3">
-
-				<div class="card module-card shadow-sm">
-
-					<div class="card-body">
-
-						<div class="module-icon">🏬</div>
-
-						<h5>Inventory</h5>
-
-						<p class="text-muted">Monitor available stock.</p>
-
-						<a href="inventory?action=list" class="btn btn-primary">
-							Inventory </a>
-
-					</div>
-
-				</div>
-
-			</div>
-
-
-			<div class="col-md-6 col-lg-3">
-
-				<div class="card module-card shadow-sm">
-
-					<div class="card-body">
-
-						<div class="module-icon">🔄</div>
-
-						<h5>Stock Transactions</h5>
-
-						<p class="text-muted">Track stock movements.</p>
-
-						<a href="stock-transactions?action=list" class="btn btn-primary">
-							Transactions </a>
-
-					</div>
-
-				</div>
-
-			</div>
-
-		</div>
-
-		<%
-		}
-		%>
-
-
-		<!-- =====================================================
-         SALES REPRESENTATIVE
-    ====================================================== -->
-
-		<%
-		if ("SALES_REP".equals(role)) {
-		%>
-
-		<h3 class="section-title">Sales Management</h3>
-
-		<div class="row g-4">
-
-			<div class="col-md-6 col-lg-4">
-
-				<div class="card module-card shadow-sm">
-
-					<div class="card-body">
-
-						<div class="module-icon">👥</div>
-
-						<h5>Clients</h5>
-
-						<p class="text-muted">Manage registered clients.</p>
-
-						<a href="clients?action=list" class="btn btn-primary"> Clients
-						</a>
-
-					</div>
-
-				</div>
-
-			</div>
-
-
-			<div class="col-md-6 col-lg-4">
-
-				<div class="card module-card shadow-sm">
-
-					<div class="card-body">
-
-						<div class="module-icon">💊</div>
-
-						<h5>Products</h5>
-
-						<p class="text-muted">View medicines and prices.</p>
-
-						<a href="products?action=list" class="btn btn-primary">
-							Products </a>
-
-					</div>
-
-				</div>
-
-			</div>
-
-
-			<div class="col-md-6 col-lg-4">
-
-				<div class="card module-card shadow-sm">
-
-					<div class="card-body">
-
-						<div class="module-icon">📄</div>
-
-						<h5>Client Documents</h5>
-
-						<p class="text-muted">Verify client documents.</p>
-
-						<a href="clients?action=list" class="btn btn-primary">
-							Documents </a>
-
-					</div>
-
-				</div>
-
-			</div>
-
-
-			<div class="col-md-6 col-lg-4">
-
-				<div class="card module-card shadow-sm">
-
-					<div class="card-body">
-
-						<div class="module-icon">🏷️</div>
-
-						<h5>Schemes</h5>
-
-						<p class="text-muted">Manage promotional schemes.</p>
-
-						<a href="schemes?action=list" class="btn btn-primary"> Schemes
-						</a>
-
-					</div>
-
-				</div>
-
-			</div>
-
-
-			<div class="col-md-6 col-lg-4">
-
-				<div class="card module-card shadow-sm">
-
-					<div class="card-body">
-
-						<div class="module-icon">🛒</div>
-
-						<h5>Orders</h5>
-
-						<p class="text-muted">Create and manage customer orders.</p>
-
-						<a href="orders?action=list" class="btn btn-success"> Orders </a>
-
-					</div>
-
-				</div>
-
-			</div>
-
-		</div>
-
-		<%
-		}
-		%>
-
-
-		<!-- =====================================================
-         ACCOUNTANT
-    ====================================================== -->
-
-		<%
-		if ("ACCOUNTANT".equals(role)) {
-		%>
-
-		<h3 class="section-title">Finance Management</h3>
-
-		<div class="row g-4">
-
-			<div class="col-md-6 col-lg-4">
-
-				<div class="card module-card shadow-sm">
-
-					<div class="card-body">
-
-						<div class="module-icon">👥</div>
-
-						<h5>Clients</h5>
-
-						<p class="text-muted">View registered clients.</p>
-
-						<a href="clients?action=list" class="btn btn-primary"> Clients
-						</a>
-
-					</div>
-
-				</div>
-
-			</div>
-
-
-			<div class="col-md-6 col-lg-4">
-
-				<div class="card module-card shadow-sm">
-
-					<div class="card-body">
-
-						<div class="module-icon">🧾</div>
-
-						<h5>Invoices</h5>
-
-						<p class="text-muted">Manage customer invoices.</p>
-
-						<a href="invoices?action=list" class="btn btn-success">
-							Invoices </a>
-
-					</div>
-
-				</div>
-
-			</div>
-
-
-			<div class="col-md-6 col-lg-4">
-
-				<div class="card module-card shadow-sm">
-
-					<div class="card-body">
-
-						<div class="module-icon">💰</div>
-
-						<h5>Payments</h5>
-
-						<p class="text-muted">Record payments and balances.</p>
-
-						<a href="payments?action=list" class="btn btn-success">
-							Payments </a>
-
-					</div>
-
-				</div>
-
-			</div>
-
-		</div>
-
-		<%
-		}
-		%>
-
-
-		<!-- =====================================================
-         DISPATCH MANAGER
-    ====================================================== -->
-
-		<%
-		if ("DISPATCH_MANAGER".equals(role)) {
-		%>
-
-		<h3 class="section-title">Dispatch Management</h3>
-
-		<div class="row g-4">
-
-			<div class="col-md-6 col-lg-4">
-
-				<div class="card module-card shadow-sm">
-
-					<div class="card-body">
-
-						<div class="module-icon">🛒</div>
-
-						<h5>Orders</h5>
-
-						<p class="text-muted">View orders ready for dispatch.</p>
-
-						<a href="orders?action=list" class="btn btn-primary"> Orders </a>
-
-					</div>
-
-				</div>
-
-			</div>
-
-
-			<div class="col-md-6 col-lg-4">
-
-				<div class="card module-card shadow-sm">
-
-					<div class="card-body">
-
-						<div class="module-icon">🚚</div>
-
-						<h5>Shipments</h5>
-
-						<p class="text-muted">Manage dispatch and delivery.</p>
-
-						<a href="shipments?action=list" class="btn btn-success">
-							Shipments </a>
-
-					</div>
-
-				</div>
-
-			</div>
-
-		</div>
-
-		<%
-		}
-		%>
-
-
-		<!-- =====================================================
-         CLIENT
-    ====================================================== -->
+	     CLIENT
+	====================================================== -->
 
 		<%
 		if ("CLIENT".equals(role)) {
@@ -868,6 +985,9 @@ body {
 		<h3 class="section-title">Client Portal</h3>
 
 		<div class="row g-4">
+
+
+			<!-- MY ORDERS -->
 
 			<div class="col-md-6 col-lg-4">
 
@@ -891,6 +1011,8 @@ body {
 			</div>
 
 
+			<!-- MY INVOICES -->
+
 			<div class="col-md-6 col-lg-4">
 
 				<div class="card module-card shadow-sm">
@@ -912,14 +1034,21 @@ body {
 
 			</div>
 
+
 		</div>
+
 
 		<%
 		}
 		%>
 
+
 	</div>
 
+
+	<!-- =========================================================
+     BOOTSTRAP JS
+========================================================= -->
 
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">

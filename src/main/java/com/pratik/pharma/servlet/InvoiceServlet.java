@@ -10,7 +10,6 @@ import com.pratik.pharma.dao.CompanyProfileDAO;
 import com.pratik.pharma.dao.InvoiceDAO;
 import com.pratik.pharma.dao.InvoiceItemDAO;
 import com.pratik.pharma.dao.OrderDAO;
-
 import com.pratik.pharma.model.Client;
 import com.pratik.pharma.model.CompanyProfile;
 import com.pratik.pharma.model.Invoice;
@@ -34,13 +33,9 @@ public class InvoiceServlet extends HttpServlet {
 	// =========================================================
 
 	private InvoiceDAO invoiceDAO;
-
 	private InvoiceItemDAO invoiceItemDAO;
-
 	private OrderDAO orderDAO;
-
 	private ClientDAO clientDAO;
-
 	private CompanyProfileDAO companyProfileDAO;
 
 	// =========================================================
@@ -51,13 +46,9 @@ public class InvoiceServlet extends HttpServlet {
 	public void init() throws ServletException {
 
 		invoiceDAO = new InvoiceDAO();
-
 		invoiceItemDAO = new InvoiceItemDAO();
-
 		orderDAO = new OrderDAO();
-
 		clientDAO = new ClientDAO();
-
 		companyProfileDAO = new CompanyProfileDAO();
 	}
 
@@ -77,7 +68,7 @@ public class InvoiceServlet extends HttpServlet {
 
 		if (action == null || action.equals("list")) {
 
-			request.getRequestDispatcher("invoice-list.jsp").forward(request, response);
+			listInvoices(request, response);
 
 			return;
 		}
@@ -109,6 +100,20 @@ public class InvoiceServlet extends HttpServlet {
 		// -----------------------------------------------------
 
 		response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid invoice action.");
+	}
+
+	// =========================================================
+	// LIST INVOICES
+	// =========================================================
+
+	private void listInvoices(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		List<Invoice> invoices = invoiceDAO.getAllInvoices();
+
+		request.setAttribute("invoices", invoices);
+
+		request.getRequestDispatcher("invoice-list.jsp").forward(request, response);
 	}
 
 	// =========================================================
@@ -394,7 +399,7 @@ public class InvoiceServlet extends HttpServlet {
 		request.setAttribute("invoiceItems", invoiceItems);
 
 		// -----------------------------------------------------
-		// FORWARD
+		// FORWARD TO INVOICE PAGE
 		// -----------------------------------------------------
 
 		request.getRequestDispatcher("invoice.jsp").forward(request, response);

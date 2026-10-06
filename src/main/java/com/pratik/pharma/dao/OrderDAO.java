@@ -34,6 +34,7 @@ public class OrderDAO {
 				    o.approved_by,
 				    o.created_by,
 				    o.created_at,
+				    o.order_source,
 
 				    c.client_name AS client_name,
 				    u.username AS created_by_name,
@@ -64,6 +65,7 @@ public class OrderDAO {
 				    o.approved_by,
 				    o.created_by,
 				    o.created_at,
+				    o.order_source,
 				    c.client_name,
 				    u.username
 
@@ -107,6 +109,7 @@ public class OrderDAO {
 				    o.approved_by,
 				    o.created_by,
 				    o.created_at,
+				    o.order_source,
 
 				    c.client_name AS client_name,
 				    u.username AS created_by_name,
@@ -139,6 +142,7 @@ public class OrderDAO {
 				    o.approved_by,
 				    o.created_by,
 				    o.created_at,
+				    o.order_source,
 				    c.client_name,
 				    u.username
 				""";
@@ -181,9 +185,10 @@ public class OrderDAO {
 				    total_amount,
 				    credit_status,
 				    approved_by,
-				    created_by
+				    created_by,
+				    order_source
 				)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 				""";
 
 		try (Connection connection = DBConnection.getConnection();
@@ -214,6 +219,8 @@ public class OrderDAO {
 			}
 
 			preparedStatement.setInt(9, order.getCreatedBy());
+
+			preparedStatement.setString(10, order.getOrderSource());
 
 			int affectedRows = preparedStatement.executeUpdate();
 
@@ -255,9 +262,10 @@ public class OrderDAO {
 				    total_amount,
 				    credit_status,
 				    approved_by,
-				    created_by
+				    created_by,
+				    order_source
 				)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 				""";
 
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql,
@@ -287,6 +295,8 @@ public class OrderDAO {
 			}
 
 			preparedStatement.setInt(9, order.getCreatedBy());
+
+			preparedStatement.setString(10, order.getOrderSource());
 
 			int affectedRows = preparedStatement.executeUpdate();
 
@@ -324,6 +334,7 @@ public class OrderDAO {
 				""";
 
 		try (Connection connection = DBConnection.getConnection();
+
 				PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
 			preparedStatement.setString(1, orderStatus);
@@ -381,14 +392,15 @@ public class OrderDAO {
 
 		order.setCreatedAt(resultSet.getTimestamp("created_at"));
 
-		// Display fields
+		// Order source
+		order.setOrderSource(resultSet.getString("order_source"));
 
+		// Display fields
 		order.setClientName(resultSet.getString("client_name"));
 
 		order.setCreatedByName(resultSet.getString("created_by_name"));
 
-		// NEW: number of products/order items
-
+		// Number of products/order items
 		order.setItemCount(resultSet.getInt("item_count"));
 
 		return order;

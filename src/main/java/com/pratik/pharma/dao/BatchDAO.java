@@ -279,6 +279,41 @@ public class BatchDAO {
 	}
 
 	// =========================================================
+	// REDUCE INVENTORY - TRANSACTION VERSION
+	// Used by Offline Sale / Order processing
+	// =========================================================
+
+	public boolean reduceInventory(Connection connection, int batchId, int quantity) throws SQLException {
+
+		if (quantity <= 0) {
+			throw new IllegalArgumentException("Inventory reduction quantity must be greater than zero.");
+		}
+
+		String sql = """
+				UPDATE inventory
+				SET quantity = quantity - ?
+				WHERE batch_id = ?
+				  AND quantity - reserved_quantity - damaged_quantity >= ?
+				""";
+
+		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+			preparedStatement.setInt(1, quantity);
+			preparedStatement.setInt(2, batchId);
+			preparedStatement.setInt(3, quantity);
+
+			int affectedRows = preparedStatement.executeUpdate();
+
+			if (affectedRows == 0) {
+
+				throw new SQLException("Insufficient available stock for batch ID: " + batchId);
+			}
+
+			return true;
+		}
+	}
+
+	// =========================================================
 	// MAP RESULTSET TO BATCH OBJECT
 	// =========================================================
 	private Batch mapBatch(ResultSet resultSet) throws SQLException {
