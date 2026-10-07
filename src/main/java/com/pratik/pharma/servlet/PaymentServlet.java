@@ -48,6 +48,10 @@ public class PaymentServlet extends HttpServlet {
 
 		String action = request.getParameter("action");
 
+		// -----------------------------------------------------
+		// LIST
+		// -----------------------------------------------------
+
 		if (action == null || action.equals("list")) {
 
 			listPayments(request, response);
@@ -55,12 +59,20 @@ public class PaymentServlet extends HttpServlet {
 			return;
 		}
 
+		// -----------------------------------------------------
+		// ADD PAYMENT
+		// -----------------------------------------------------
+
 		if (action.equals("add")) {
 
 			showPaymentForm(request, response);
 
 			return;
 		}
+
+		// -----------------------------------------------------
+		// VIEW PAYMENT
+		// -----------------------------------------------------
 
 		if (action.equals("view")) {
 
@@ -93,7 +105,7 @@ public class PaymentServlet extends HttpServlet {
 	}
 
 	// =========================================================
-	// LIST
+	// LIST PAYMENTS
 	// =========================================================
 
 	private void listPayments(HttpServletRequest request, HttpServletResponse response)
@@ -107,11 +119,27 @@ public class PaymentServlet extends HttpServlet {
 	}
 
 	// =========================================================
-	// SHOW FORM
+	// SHOW PAYMENT FORM
 	// =========================================================
 
 	private void showPaymentForm(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+
+		/*
+		 * Load all invoices which still have outstanding balance.
+		 *
+		 * Example:
+		 *
+		 * Invoice Total Paid Outstanding INV-000006 9133.60 5000 4133.60
+		 */
+
+		List<Payment> outstandingInvoices = paymentDAO.getOutstandingInvoices();
+
+		request.setAttribute("outstandingInvoices", outstandingInvoices);
+
+		// -----------------------------------------------------
+		// OPTIONAL SELECTED INVOICE
+		// -----------------------------------------------------
 
 		String invoiceIdParameter = request.getParameter("invoiceId");
 
@@ -143,12 +171,20 @@ public class PaymentServlet extends HttpServlet {
 
 		HttpSession session = request.getSession(false);
 
+		// -----------------------------------------------------
+		// LOGIN CHECK
+		// -----------------------------------------------------
+
 		if (session == null || session.getAttribute("userId") == null) {
 
 			response.sendRedirect("login.jsp");
 
 			return;
 		}
+
+		// -----------------------------------------------------
+		// GET FORM VALUES
+		// -----------------------------------------------------
 
 		String invoiceIdParameter = request.getParameter("invoiceId");
 
@@ -159,12 +195,12 @@ public class PaymentServlet extends HttpServlet {
 		String transactionReference = request.getParameter("transactionReference");
 
 		// -----------------------------------------------------
-		// VALIDATE INVOICE
+		// VALIDATE INVOICE ID
 		// -----------------------------------------------------
 
 		if (invoiceIdParameter == null || invoiceIdParameter.isBlank()) {
 
-			request.setAttribute("error", "Invoice is required.");
+			request.setAttribute("error", "Please select an invoice.");
 
 			showPaymentForm(request, response);
 
@@ -186,6 +222,10 @@ public class PaymentServlet extends HttpServlet {
 			return;
 		}
 
+		// -----------------------------------------------------
+		// GET INVOICE
+		// -----------------------------------------------------
+
 		Invoice invoice = invoiceDAO.getInvoiceById(invoiceId);
 
 		if (invoice == null) {
@@ -198,8 +238,19 @@ public class PaymentServlet extends HttpServlet {
 		}
 
 		// -----------------------------------------------------
-		// VALIDATE AMOUNT
+		// VALIDATE PAYMENT AMOUNT
 		// -----------------------------------------------------
+
+		if (amountParameter == null || amountParameter.isBlank()) {
+
+			request.setAttribute("error", "Payment amount is required.");
+
+			request.setAttribute("selectedInvoice", invoice);
+
+			showPaymentForm(request, response);
+
+			return;
+		}
 
 		BigDecimal amount;
 
@@ -207,16 +258,20 @@ public class PaymentServlet extends HttpServlet {
 
 			amount = new BigDecimal(amountParameter);
 
-		} catch (Exception e) {
+		} catch (NumberFormatException e) {
 
 			request.setAttribute("error", "Invalid payment amount.");
 
 			request.setAttribute("selectedInvoice", invoice);
 
-			request.getRequestDispatcher("payment-form.jsp").forward(request, response);
+			showPaymentForm(request, response);
 
 			return;
 		}
+
+		// -----------------------------------------------------
+		// AMOUNT MUST BE POSITIVE
+		// -----------------------------------------------------
 
 		if (amount.compareTo(BigDecimal.ZERO) <= 0) {
 
@@ -224,16 +279,40 @@ public class PaymentServlet extends HttpServlet {
 
 			request.setAttribute("selectedInvoice", invoice);
 
-			request.getRequestDispatcher("payment-form.jsp").forward(request, response);
+			showPaymentForm(request, response);
 
 			return;
 		}
 
 		// -----------------------------------------------------
-		// CHECK OUTSTANDING
+		// VALIDATE PAYMENT METHOD
+		// -----------------------------------------------------
+
+		if (paymentMethod == null || paymentMethod.isBlank()) {
+
+			request.setAttribute("error", "Please select a payment method.");
+
+			request.setAttribute("selectedInvoice", invoice);
+
+			showPaymentForm(request, response);
+
+			return;
+		}
+
+		// -----------------------------------------------------
+		// GET ALREADY PAID AMOUNT
 		// -----------------------------------------------------
 
 		BigDecimal paidAmount = paymentDAO.getPaidAmountForInvoice(invoiceId);
+
+		if (paidAmount == null) {
+
+			paidAmount = BigDecimal.ZERO;
+		}
+
+		// -----------------------------------------------------
+		// CALCULATE OUTSTANDING
+		// -----------------------------------------------------
 
 		BigDecimal outstanding = invoice.getTotalAmount().subtract(paidAmount);
 
@@ -242,13 +321,30 @@ public class PaymentServlet extends HttpServlet {
 			outstanding = BigDecimal.ZERO;
 		}
 
+		// -----------------------------------------------------
+		// CHECK IF ALREADY FULLY PAID
+		// -----------------------------------------------------
+
+		if (outstanding.compareTo(BigDecimal.ZERO) == 0) {
+
+			request.setAttribute("error", "This invoice is already fully paid.");
+
+			showPaymentForm(request, response);
+
+			return;
+		}
+
+		// -----------------------------------------------------
+		// PAYMENT CANNOT EXCEED OUTSTANDING
+		// -----------------------------------------------------
+
 		if (amount.compareTo(outstanding) > 0) {
 
 			request.setAttribute("error", "Payment amount ₹" + amount + " exceeds outstanding amount ₹" + outstanding);
 
 			request.setAttribute("selectedInvoice", invoice);
 
-			request.getRequestDispatcher("payment-form.jsp").forward(request, response);
+			showPaymentForm(request, response);
 
 			return;
 		}
@@ -260,7 +356,7 @@ public class PaymentServlet extends HttpServlet {
 		String paymentStatus = "SUCCESS";
 
 		// -----------------------------------------------------
-		// CREATE PAYMENT
+		// CREATE PAYMENT OBJECT
 		// -----------------------------------------------------
 
 		Payment payment = new Payment();
@@ -279,6 +375,10 @@ public class PaymentServlet extends HttpServlet {
 
 		payment.setRecordedBy((Integer) session.getAttribute("userId"));
 
+		// -----------------------------------------------------
+		// SAVE PAYMENT
+		// -----------------------------------------------------
+
 		boolean created = paymentDAO.addPayment(payment);
 
 		if (created) {
@@ -291,7 +391,7 @@ public class PaymentServlet extends HttpServlet {
 
 			request.setAttribute("selectedInvoice", invoice);
 
-			request.getRequestDispatcher("payment-form.jsp").forward(request, response);
+			showPaymentForm(request, response);
 		}
 	}
 
@@ -303,6 +403,10 @@ public class PaymentServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		String idParameter = request.getParameter("id");
+
+		// -----------------------------------------------------
+		// VALIDATE PAYMENT ID
+		// -----------------------------------------------------
 
 		if (idParameter == null || idParameter.isBlank()) {
 
@@ -323,6 +427,10 @@ public class PaymentServlet extends HttpServlet {
 
 			return;
 		}
+
+		// -----------------------------------------------------
+		// GET PAYMENT
+		// -----------------------------------------------------
 
 		Payment payment = paymentDAO.getPaymentById(paymentId);
 

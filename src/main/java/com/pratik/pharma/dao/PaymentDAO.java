@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,9 +70,7 @@ public class PaymentDAO {
 				""";
 
 		try (Connection connection = DBConnection.getConnection();
-
 				PreparedStatement statement = connection.prepareStatement(sql);
-
 				ResultSet resultSet = statement.executeQuery()) {
 
 			while (resultSet.next()) {
@@ -87,6 +86,68 @@ public class PaymentDAO {
 		}
 
 		return payments;
+	}
+
+	// =========================================================
+	// GET OUTSTANDING INVOICES
+	// =========================================================
+
+	public List<Payment> getOutstandingInvoices() {
+
+		List<Payment> outstandingInvoices = new ArrayList<>();
+
+		String sql = "SELECT " + "i.invoice_id, " + "i.invoice_number, " + "i.order_id, " + "i.total_amount, "
+				+ "i.due_date, " + "c.client_name, " + "COALESCE(SUM(p.amount), 0) AS paid_amount, "
+				+ "(i.total_amount - COALESCE(SUM(p.amount), 0)) AS outstanding_amount " +
+
+				"FROM invoices i " +
+
+				"JOIN orders o " + "ON i.order_id = o.order_id " +
+
+				"JOIN clients c " + "ON o.client_id = c.client_id " +
+
+				"LEFT JOIN payments p " + "ON i.invoice_id = p.invoice_id " + "AND p.payment_status = 'SUCCESS' " +
+
+				"GROUP BY " + "i.invoice_id, " + "i.invoice_number, " + "i.order_id, " + "i.total_amount, "
+				+ "i.due_date, " + "c.client_name " +
+
+				"HAVING " + "(i.total_amount - COALESCE(SUM(p.amount), 0)) > 0 " +
+
+				"ORDER BY " + "i.due_date ASC, " + "i.invoice_id ASC";
+
+		try (Connection connection = DBConnection.getConnection();
+				PreparedStatement preparedStatement = connection.prepareStatement(sql);
+				ResultSet resultSet = preparedStatement.executeQuery()) {
+
+			while (resultSet.next()) {
+
+				Payment payment = new Payment();
+
+				payment.setInvoiceId(resultSet.getInt("invoice_id"));
+
+				payment.setInvoiceNumber(resultSet.getString("invoice_number"));
+
+				payment.setOrderId(resultSet.getInt("order_id"));
+
+				payment.setInvoiceTotalAmount(resultSet.getBigDecimal("total_amount"));
+
+				payment.setInvoiceDueDate(resultSet.getDate("due_date"));
+
+				payment.setClientName(resultSet.getString("client_name"));
+
+				payment.setPaidAmount(resultSet.getBigDecimal("paid_amount"));
+
+				payment.setOutstandingAmount(resultSet.getBigDecimal("outstanding_amount"));
+
+				outstandingInvoices.add(payment);
+			}
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+
+		return outstandingInvoices;
 	}
 
 	// =========================================================
@@ -146,7 +207,6 @@ public class PaymentDAO {
 				""";
 
 		try (Connection connection = DBConnection.getConnection();
-
 				PreparedStatement statement = connection.prepareStatement(sql)) {
 
 			statement.setInt(1, paymentId);
@@ -226,7 +286,6 @@ public class PaymentDAO {
 				""";
 
 		try (Connection connection = DBConnection.getConnection();
-
 				PreparedStatement statement = connection.prepareStatement(sql)) {
 
 			statement.setInt(1, invoiceId);
@@ -267,7 +326,6 @@ public class PaymentDAO {
 				""";
 
 		try (Connection connection = DBConnection.getConnection();
-
 				PreparedStatement statement = connection.prepareStatement(sql)) {
 
 			statement.setInt(1, payment.getInvoiceId());
@@ -306,13 +364,15 @@ public class PaymentDAO {
 				        SUM(amount),
 				        0
 				    ) AS paid_amount
+
 				FROM payments
+
 				WHERE invoice_id = ?
+
 				AND payment_status = 'SUCCESS'
 				""";
 
 		try (Connection connection = DBConnection.getConnection();
-
 				PreparedStatement statement = connection.prepareStatement(sql)) {
 
 			statement.setInt(1, invoiceId);
@@ -374,6 +434,7 @@ public class PaymentDAO {
 		BigDecimal paidAmount = resultSet.getBigDecimal("paid_amount");
 
 		if (paidAmount == null) {
+
 			paidAmount = BigDecimal.ZERO;
 		}
 
@@ -382,6 +443,7 @@ public class PaymentDAO {
 		BigDecimal invoiceTotal = payment.getInvoiceTotalAmount();
 
 		if (invoiceTotal == null) {
+
 			invoiceTotal = BigDecimal.ZERO;
 		}
 

@@ -77,7 +77,7 @@ public class InvoiceServlet extends HttpServlet {
 
 		if (action == null || action.equals("list")) {
 
-			request.getRequestDispatcher("invoice-list.jsp").forward(request, response);
+			listInvoices(request, response);
 
 			return;
 		}
@@ -112,6 +112,34 @@ public class InvoiceServlet extends HttpServlet {
 	}
 
 	// =========================================================
+	// LIST INVOICES
+	// =========================================================
+
+	private void listInvoices(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		try {
+
+			// Get all invoices from database
+			List<Invoice> invoices = invoiceDAO.getAllInvoices();
+
+			// Send invoice list to JSP
+			request.setAttribute("invoices", invoices);
+
+			// Open invoice list page
+			request.getRequestDispatcher("invoice-list.jsp").forward(request, response);
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+			request.setAttribute("error", "Unable to load invoices.");
+
+			request.getRequestDispatcher("invoice-list.jsp").forward(request, response);
+		}
+	}
+
+	// =========================================================
 	// GENERATE INVOICE
 	// =========================================================
 
@@ -128,7 +156,7 @@ public class InvoiceServlet extends HttpServlet {
 
 			request.setAttribute("error", "Order ID is required.");
 
-			request.getRequestDispatcher("invoice-list.jsp").forward(request, response);
+			listInvoices(request, response);
 
 			return;
 		}
@@ -143,7 +171,7 @@ public class InvoiceServlet extends HttpServlet {
 
 			request.setAttribute("error", "Invalid Order ID.");
 
-			request.getRequestDispatcher("invoice-list.jsp").forward(request, response);
+			listInvoices(request, response);
 
 			return;
 		}
@@ -171,7 +199,7 @@ public class InvoiceServlet extends HttpServlet {
 
 			request.setAttribute("error", "Order not found.");
 
-			request.getRequestDispatcher("invoice-list.jsp").forward(request, response);
+			listInvoices(request, response);
 
 			return;
 		}
@@ -186,7 +214,7 @@ public class InvoiceServlet extends HttpServlet {
 
 			request.setAttribute("error", "Client not found.");
 
-			request.getRequestDispatcher("invoice-list.jsp").forward(request, response);
+			listInvoices(request, response);
 
 			return;
 		}
@@ -265,7 +293,7 @@ public class InvoiceServlet extends HttpServlet {
 
 			request.setAttribute("error", "Unable to generate invoice.");
 
-			request.getRequestDispatcher("invoice-list.jsp").forward(request, response);
+			listInvoices(request, response);
 
 			return;
 		}
@@ -284,7 +312,7 @@ public class InvoiceServlet extends HttpServlet {
 
 			request.setAttribute("error", "Invoice created but could not be loaded.");
 
-			request.getRequestDispatcher("invoice-list.jsp").forward(request, response);
+			listInvoices(request, response);
 		}
 	}
 

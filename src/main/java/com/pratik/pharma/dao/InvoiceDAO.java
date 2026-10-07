@@ -3,6 +3,8 @@ package com.pratik.pharma.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.pratik.pharma.model.Invoice;
 import com.pratik.pharma.util.DBConnection;
@@ -10,8 +12,54 @@ import com.pratik.pharma.util.DBConnection;
 public class InvoiceDAO {
 
 	// =========================================================
+	// GET ALL INVOICES
+	// =========================================================
+
+	public List<Invoice> getAllInvoices() {
+
+		List<Invoice> invoices = new ArrayList<>();
+
+		String sql = """
+				SELECT
+				    invoice_id,
+				    order_id,
+				    invoice_number,
+				    invoice_date,
+				    subtotal,
+				    discount_amount,
+				    tax_amount,
+				    total_amount,
+				    due_date,
+				    invoice_status,
+				    created_by,
+				    created_at
+				FROM invoices
+				ORDER BY invoice_id DESC
+				""";
+
+		try (Connection connection = DBConnection.getConnection();
+				PreparedStatement statement = connection.prepareStatement(sql);
+				ResultSet resultSet = statement.executeQuery()) {
+
+			while (resultSet.next()) {
+
+				Invoice invoice = mapInvoice(resultSet);
+
+				invoices.add(invoice);
+			}
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+		return invoices;
+	}
+
+	// =========================================================
 	// GET INVOICE BY ORDER ID
 	// =========================================================
+
 	public Invoice getInvoiceByOrderId(int orderId) {
 
 		Invoice invoice = null;
@@ -42,11 +90,13 @@ public class InvoiceDAO {
 			try (ResultSet resultSet = statement.executeQuery()) {
 
 				if (resultSet.next()) {
+
 					invoice = mapInvoice(resultSet);
 				}
 			}
 
 		} catch (Exception e) {
+
 			e.printStackTrace();
 		}
 
@@ -56,6 +106,7 @@ public class InvoiceDAO {
 	// =========================================================
 	// GET INVOICE BY ID
 	// =========================================================
+
 	public Invoice getInvoiceById(int invoiceId) {
 
 		Invoice invoice = null;
@@ -86,11 +137,13 @@ public class InvoiceDAO {
 			try (ResultSet resultSet = statement.executeQuery()) {
 
 				if (resultSet.next()) {
+
 					invoice = mapInvoice(resultSet);
 				}
 			}
 
 		} catch (Exception e) {
+
 			e.printStackTrace();
 		}
 
@@ -100,6 +153,7 @@ public class InvoiceDAO {
 	// =========================================================
 	// CREATE INVOICE
 	// =========================================================
+
 	public boolean createInvoice(Invoice invoice) {
 
 		String sql = """
@@ -155,7 +209,6 @@ public class InvoiceDAO {
 		} catch (Exception e) {
 
 			e.printStackTrace();
-
 		}
 
 		return false;
@@ -164,6 +217,7 @@ public class InvoiceDAO {
 	// =========================================================
 	// MAP RESULTSET → INVOICE
 	// =========================================================
+
 	private Invoice mapInvoice(ResultSet resultSet) throws Exception {
 
 		Invoice invoice = new Invoice();

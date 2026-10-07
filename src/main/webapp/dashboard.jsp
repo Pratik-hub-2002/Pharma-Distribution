@@ -355,6 +355,30 @@ body {
 
 			</div>
 
+			<!-- OFFLINE SALE -->
+
+			<div class="col-md-6 col-lg-4">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">💵</div>
+
+						<h5>Offline Sale</h5>
+
+						<p class="text-muted">Create direct counter sales for clients.
+						</p>
+
+						<a href="offline-sale" class="btn btn-success"> Create Offline
+							Sale </a>
+
+					</div>
+
+				</div>
+
+			</div>
+
 
 			<!-- DOCUMENTS -->
 
@@ -466,7 +490,8 @@ body {
 		<div class="mb-5">
 
 			<a href="orders?action=add" class="btn btn-success me-2"> 🛒
-				Create Order </a> <a href="payments?action=add&invoiceId=1"
+				Create Order </a> <a href="offline-sale" class="btn btn-success me-2">
+				💵 Offline Sale </a> <a href="payments?action=add&invoiceId=1"
 				class="btn btn-warning me-2"> 💰 Record Payment </a> <a
 				href="shipments?action=list" class="btn btn-info me-2"> 🚚
 				Shipments </a> <a href="clients?action=list" class="btn btn-secondary">
