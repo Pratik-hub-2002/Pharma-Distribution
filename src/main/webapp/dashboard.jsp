@@ -294,9 +294,9 @@ body {
 			</div>
 
 
-			<!-- =================================================
-             SCHEMES
-        ================================================== -->
+			<!-- =====================================================
+            SCHEMES
+        ======================================================= -->
 
 			<div class="col-md-6 col-lg-4">
 
@@ -320,7 +320,36 @@ body {
 
 			</div>
 
+
+			<!-- =================================================
+            MANUFACTURERS
+        ================================================== -->
+
+			<div class="col-md-6 col-lg-4">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">🏭</div>
+
+						<h5>Manufacturers</h5>
+
+						<p class="text-muted">Manage pharmaceutical manufacturers and
+							supplier details.</p>
+
+						<a href="manufacturers" class="btn btn-primary"> Manage
+							Manufacturers </a>
+
+					</div>
+
+				</div>
+
+			</div>
+
+
 		</div>
+
 
 
 		<!-- =====================================================
@@ -378,6 +407,8 @@ body {
 				</div>
 
 			</div>
+
+
 
 
 			<!-- DOCUMENTS -->
