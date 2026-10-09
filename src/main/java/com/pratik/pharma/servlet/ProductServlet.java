@@ -129,10 +129,9 @@ public class ProductServlet extends HttpServlet {
 
 			List<Category> categories = categoryDAO.getAllCategories();
 
-			List<Manufacturer> manufacturers = manufacturerDAO.getAllManufacturers();
+			List<Manufacturer> manufacturers = manufacturerDAO.getActiveManufacturers();
 
 			request.setAttribute("categories", categories);
-
 			request.setAttribute("manufacturers", manufacturers);
 
 			request.getRequestDispatcher("/product-form.jsp").forward(request, response);

@@ -347,8 +347,33 @@ body {
 
 			</div>
 
+			<!-- =====================================================
+     DISPATCHER ORDER REVIEW
+====================================================== -->
 
+			<div class="col-md-6 col-lg-4">
+
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">📦</div>
+
+						<h5>Dispatcher Order Review</h5>
+
+						<p class="text-muted">Review newly placed orders, verify stock
+							and approve orders for billing.</p>
+
+						<a href="dispatch-orders" class="btn btn-primary"> Review
+							Orders </a>
+
+					</div>
+
+				</div>
+
+			</div>
 		</div>
+
 
 
 
@@ -406,6 +431,25 @@ body {
 
 				</div>
 
+			</div>
+			<div class="col-md-6 col-lg-4">
+				<div class="card module-card shadow-sm">
+
+					<div class="card-body">
+
+						<div class="module-icon">🧾</div>
+
+						<h5>Accountant Billing</h5>
+
+						<p class="text-muted">Create invoices for dispatcher-approved
+							orders and manage the billing workflow.</p>
+
+						<a href="accountant-billing" class="btn btn-success"> Manage
+							Billing </a>
+
+					</div>
+
+				</div>
 			</div>
 
 

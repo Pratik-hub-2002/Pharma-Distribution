@@ -50,6 +50,7 @@ public class AuthFilter implements Filter {
 		superAdmin.add("shipments");
 		superAdmin.add("invoices");
 		superAdmin.add("payments");
+		superAdmin.add("accountant-billing");
 
 		rolePermissions.put("SUPER_ADMIN", superAdmin);
 
@@ -92,6 +93,7 @@ public class AuthFilter implements Filter {
 		accountant.add("clients");
 		accountant.add("invoices");
 		accountant.add("payments");
+		accountant.add("accountant-billing");
 
 		rolePermissions.put("ACCOUNTANT", accountant);
 
@@ -271,10 +273,14 @@ public class AuthFilter implements Filter {
 		if (path.equals("/invoices")) {
 			return "invoices";
 		}
+		if (path.equals("/accountant-billing")) {
+		    return "accountant-billing";
+		}
 
 		if (path.equals("/payments")) {
 			return "payments";
 		}
+		
 
 		return null;
 	}

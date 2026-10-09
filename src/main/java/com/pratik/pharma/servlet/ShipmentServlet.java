@@ -153,7 +153,7 @@ public class ShipmentServlet extends HttpServlet {
 	private void showAddForm(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		List<Order> orders = orderDAO.getAllOrders();
+		List<Order> orders = shipmentDAO.getOrdersEligibleForShipment();
 
 		request.setAttribute("orders", orders);
 
@@ -175,6 +175,10 @@ public class ShipmentServlet extends HttpServlet {
 
 			return;
 		}
+
+		// -----------------------------------------------------
+		// ORDER ID
+		// -----------------------------------------------------
 
 		String orderIdParameter = request.getParameter("orderId");
 
@@ -211,6 +215,32 @@ public class ShipmentServlet extends HttpServlet {
 		if (order == null) {
 
 			request.setAttribute("error", "Order not found.");
+
+			showAddForm(request, response);
+
+			return;
+		}
+
+		// -----------------------------------------------------
+		// CHECK ORDER STATUS
+		// -----------------------------------------------------
+
+		if (!"APPROVED".equals(order.getOrderStatus())) {
+
+			request.setAttribute("error", "Order #" + orderId + " is not approved for shipment.");
+
+			showAddForm(request, response);
+
+			return;
+		}
+
+		// -----------------------------------------------------
+		// CHECK PAYMENT
+		// -----------------------------------------------------
+
+		if (!"PAID".equals(order.getCreditStatus())) {
+
+			request.setAttribute("error", "Order #" + orderId + " has not been paid.");
 
 			showAddForm(request, response);
 
@@ -329,14 +359,25 @@ public class ShipmentServlet extends HttpServlet {
 
 		String idParameter = request.getParameter("id");
 
-		if (idParameter == null) {
+		if (idParameter == null || idParameter.isBlank()) {
 
 			response.sendRedirect("shipments?action=list");
 
 			return;
 		}
 
-		int shipmentId = Integer.parseInt(idParameter);
+		int shipmentId;
+
+		try {
+
+			shipmentId = Integer.parseInt(idParameter);
+
+		} catch (NumberFormatException e) {
+
+			response.sendRedirect("shipments?action=list");
+
+			return;
+		}
 
 		shipmentDAO.markDispatched(shipmentId);
 
@@ -351,14 +392,25 @@ public class ShipmentServlet extends HttpServlet {
 
 		String idParameter = request.getParameter("id");
 
-		if (idParameter == null) {
+		if (idParameter == null || idParameter.isBlank()) {
 
 			response.sendRedirect("shipments?action=list");
 
 			return;
 		}
 
-		int shipmentId = Integer.parseInt(idParameter);
+		int shipmentId;
+
+		try {
+
+			shipmentId = Integer.parseInt(idParameter);
+
+		} catch (NumberFormatException e) {
+
+			response.sendRedirect("shipments?action=list");
+
+			return;
+		}
 
 		shipmentDAO.markDelivered(shipmentId);
 
@@ -375,14 +427,25 @@ public class ShipmentServlet extends HttpServlet {
 
 		String temperatureStatus = request.getParameter("temperatureStatus");
 
-		if (idParameter == null) {
+		if (idParameter == null || idParameter.isBlank()) {
 
 			response.sendRedirect("shipments?action=list");
 
 			return;
 		}
 
-		int shipmentId = Integer.parseInt(idParameter);
+		int shipmentId;
+
+		try {
+
+			shipmentId = Integer.parseInt(idParameter);
+
+		} catch (NumberFormatException e) {
+
+			response.sendRedirect("shipments?action=list");
+
+			return;
+		}
 
 		shipmentDAO.updateTemperatureStatus(shipmentId, temperatureStatus);
 
