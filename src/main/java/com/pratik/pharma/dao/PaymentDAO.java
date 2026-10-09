@@ -96,28 +96,59 @@ public class PaymentDAO {
 
 		List<Payment> outstandingInvoices = new ArrayList<>();
 
-		String sql = "SELECT " + "i.invoice_id, " + "i.invoice_number, " + "i.order_id, " + "i.total_amount, "
-				+ "i.due_date, " + "c.client_name, " + "COALESCE(SUM(p.amount), 0) AS paid_amount, "
-				+ "(i.total_amount - COALESCE(SUM(p.amount), 0)) AS outstanding_amount " +
+		String sql = """
+				SELECT
+				    i.invoice_id,
+				    i.invoice_number,
+				    i.order_id,
+				    i.total_amount,
+				    i.due_date,
+				    c.client_name,
 
-				"FROM invoices i " +
+				    COALESCE(
+				        SUM(p.amount),
+				        0
+				    ) AS paid_amount,
 
-				"JOIN orders o " + "ON i.order_id = o.order_id " +
+				    (
+				        i.total_amount -
+				        COALESCE(SUM(p.amount), 0)
+				    ) AS outstanding_amount
 
-				"JOIN clients c " + "ON o.client_id = c.client_id " +
+				FROM invoices i
 
-				"LEFT JOIN payments p " + "ON i.invoice_id = p.invoice_id " + "AND p.payment_status = 'SUCCESS' " +
+				INNER JOIN orders o
+				    ON i.order_id = o.order_id
 
-				"GROUP BY " + "i.invoice_id, " + "i.invoice_number, " + "i.order_id, " + "i.total_amount, "
-				+ "i.due_date, " + "c.client_name " +
+				INNER JOIN clients c
+				    ON o.client_id = c.client_id
 
-				"HAVING " + "(i.total_amount - COALESCE(SUM(p.amount), 0)) > 0 " +
+				LEFT JOIN payments p
+				    ON i.invoice_id = p.invoice_id
+				    AND p.payment_status = 'SUCCESS'
 
-				"ORDER BY " + "i.due_date ASC, " + "i.invoice_id ASC";
+				GROUP BY
+				    i.invoice_id,
+				    i.invoice_number,
+				    i.order_id,
+				    i.total_amount,
+				    i.due_date,
+				    c.client_name
+
+				HAVING
+				    (
+				        i.total_amount -
+				        COALESCE(SUM(p.amount), 0)
+				    ) > 0
+
+				ORDER BY
+				    i.due_date ASC,
+				    i.invoice_id ASC
+				""";
 
 		try (Connection connection = DBConnection.getConnection();
-				PreparedStatement preparedStatement = connection.prepareStatement(sql);
-				ResultSet resultSet = preparedStatement.executeQuery()) {
+				PreparedStatement statement = connection.prepareStatement(sql);
+				ResultSet resultSet = statement.executeQuery()) {
 
 			while (resultSet.next()) {
 
@@ -307,12 +338,12 @@ public class PaymentDAO {
 	}
 
 	// =========================================================
-	// ADD PAYMENT
+	// ADD PAYMENT + UPDATE INVOICE + UPDATE ORDER CREDIT STATUS
 	// =========================================================
 
 	public boolean addPayment(Payment payment) {
 
-		String sql = """
+		String insertPaymentSQL = """
 				INSERT INTO payments (
 				    invoice_id,
 				    payment_date,
@@ -325,28 +356,200 @@ public class PaymentDAO {
 				VALUES (?, ?, ?, ?, ?, ?, ?)
 				""";
 
-		try (Connection connection = DBConnection.getConnection();
-				PreparedStatement statement = connection.prepareStatement(sql)) {
+		String getInvoiceTotalSQL = """
+				SELECT total_amount
+				FROM invoices
+				WHERE invoice_id = ?
+				""";
 
-			statement.setInt(1, payment.getInvoiceId());
+		String getPaidAmountSQL = """
+				SELECT
+				    COALESCE(SUM(amount), 0) AS paid_amount
+				FROM payments
+				WHERE invoice_id = ?
+				AND payment_status = 'SUCCESS'
+				""";
 
-			statement.setDate(2, payment.getPaymentDate());
+		String updateInvoiceStatusSQL = """
+				UPDATE invoices
+				SET invoice_status = ?
+				WHERE invoice_id = ?
+				""";
 
-			statement.setBigDecimal(3, payment.getAmount());
+		String updateOrderCreditStatusSQL = """
+				UPDATE orders
+				SET credit_status = ?
+				WHERE order_id = (
+				    SELECT order_id
+				    FROM invoices
+				    WHERE invoice_id = ?
+				)
+				""";
 
-			statement.setString(4, payment.getPaymentMethod());
+		Connection connection = null;
 
-			statement.setString(5, payment.getTransactionReference());
+		try {
 
-			statement.setString(6, payment.getPaymentStatus());
+			connection = DBConnection.getConnection();
 
-			statement.setInt(7, payment.getRecordedBy());
+			// Start transaction
+			connection.setAutoCommit(false);
 
-			return statement.executeUpdate() > 0;
+			// -------------------------------------------------
+			// 1. INSERT PAYMENT
+			// -------------------------------------------------
+
+			try (PreparedStatement statement = connection.prepareStatement(insertPaymentSQL)) {
+
+				statement.setInt(1, payment.getInvoiceId());
+
+				statement.setDate(2, payment.getPaymentDate());
+
+				statement.setBigDecimal(3, payment.getAmount());
+
+				statement.setString(4, payment.getPaymentMethod());
+
+				statement.setString(5, payment.getTransactionReference());
+
+				statement.setString(6, payment.getPaymentStatus());
+
+				statement.setInt(7, payment.getRecordedBy());
+
+				statement.executeUpdate();
+			}
+
+			// -------------------------------------------------
+			// 2. GET INVOICE TOTAL
+			// -------------------------------------------------
+
+			BigDecimal invoiceTotal = BigDecimal.ZERO;
+
+			try (PreparedStatement statement = connection.prepareStatement(getInvoiceTotalSQL)) {
+
+				statement.setInt(1, payment.getInvoiceId());
+
+				try (ResultSet resultSet = statement.executeQuery()) {
+
+					if (resultSet.next()) {
+
+						invoiceTotal = resultSet.getBigDecimal("total_amount");
+					}
+				}
+			}
+
+			if (invoiceTotal == null) {
+
+				throw new SQLException("Invoice not found.");
+			}
+
+			// -------------------------------------------------
+			// 3. GET TOTAL SUCCESSFUL PAYMENTS
+			// -------------------------------------------------
+
+			BigDecimal paidAmount = BigDecimal.ZERO;
+
+			try (PreparedStatement statement = connection.prepareStatement(getPaidAmountSQL)) {
+
+				statement.setInt(1, payment.getInvoiceId());
+
+				try (ResultSet resultSet = statement.executeQuery()) {
+
+					if (resultSet.next()) {
+
+						paidAmount = resultSet.getBigDecimal("paid_amount");
+					}
+				}
+			}
+
+			if (paidAmount == null) {
+
+				paidAmount = BigDecimal.ZERO;
+			}
+
+			// -------------------------------------------------
+			// 4. DETERMINE INVOICE + CREDIT STATUS
+			// -------------------------------------------------
+
+			String invoiceStatus;
+			String creditStatus;
+
+			if (paidAmount.compareTo(invoiceTotal) >= 0) {
+
+				invoiceStatus = "PAID";
+				creditStatus = "PAID";
+
+			} else {
+
+				invoiceStatus = "PENDING";
+				creditStatus = "PENDING";
+			}
+
+			// -------------------------------------------------
+			// 5. UPDATE INVOICE STATUS
+			// -------------------------------------------------
+
+			try (PreparedStatement statement = connection.prepareStatement(updateInvoiceStatusSQL)) {
+
+				statement.setString(1, invoiceStatus);
+
+				statement.setInt(2, payment.getInvoiceId());
+
+				statement.executeUpdate();
+			}
+
+			// -------------------------------------------------
+			// 6. UPDATE ORDER CREDIT STATUS
+			// -------------------------------------------------
+
+			try (PreparedStatement statement = connection.prepareStatement(updateOrderCreditStatusSQL)) {
+
+				statement.setString(1, creditStatus);
+
+				statement.setInt(2, payment.getInvoiceId());
+
+				statement.executeUpdate();
+			}
+
+			// -------------------------------------------------
+			// 7. COMMIT
+			// -------------------------------------------------
+
+			connection.commit();
+
+			return true;
 
 		} catch (Exception e) {
 
 			e.printStackTrace();
+
+			// Rollback if something fails
+			if (connection != null) {
+
+				try {
+
+					connection.rollback();
+
+				} catch (SQLException rollbackException) {
+
+					rollbackException.printStackTrace();
+				}
+			}
+
+		} finally {
+
+			if (connection != null) {
+
+				try {
+
+					connection.setAutoCommit(true);
+
+					connection.close();
+
+				} catch (SQLException closeException) {
+
+					closeException.printStackTrace();
+				}
+			}
 		}
 
 		return false;
@@ -381,7 +584,14 @@ public class PaymentDAO {
 
 				if (resultSet.next()) {
 
-					return resultSet.getBigDecimal("paid_amount");
+					BigDecimal amount = resultSet.getBigDecimal("paid_amount");
+
+					if (amount == null) {
+
+						return BigDecimal.ZERO;
+					}
+
+					return amount;
 				}
 			}
 
